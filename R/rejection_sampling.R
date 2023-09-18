@@ -44,7 +44,7 @@ plot_rejection_sampling <- function(samples, p, x_min, x_max) {
   actual <- data.frame(x = x, p = p_val)
   ggplot2::ggplot(samples, ggplot2::aes(sample, ggplot2::after_stat(density))) +
     ggplot2::geom_histogram(bins = 200) +
-    ggplot2::geom_line(data = actual, ggplot2::aes(x = x, y = p))
+    ggplot2::geom_line(data = actual, ggplot2::aes(x = x, y = p) )
 }
 
 x <- rejection_sampling(f, covering, 3, -5, 5, 100000)
@@ -77,5 +77,5 @@ plot_animated <- function(samples) {
   # gganimate::animate(anim)
 }
 
-x <- rejection_sampling_all_points(f, covering, 3, -5, 5, 1000)
-plot_animated(x)
+# x <- rejection_sampling_all_points(f, covering, 3, -5, 5, 1000)
+# plot_animated(x)

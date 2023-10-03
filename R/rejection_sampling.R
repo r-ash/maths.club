@@ -41,13 +41,15 @@ rejection_sampling <- function(p, q, c, x_min, x_max, n_samples) {
 plot_rejection_sampling <- function(samples, p, x_min, x_max) {
   x <- seq(x_min, x_max, 0.1)
   p_val <- p(x)
+  normalise <- integrate(p, x_min, x_max)
+  p_val <- p(x)/normalise$value
   actual <- data.frame(x = x, p = p_val)
   ggplot2::ggplot(samples, ggplot2::aes(sample, ggplot2::after_stat(density))) +
     ggplot2::geom_histogram(bins = 200) +
     ggplot2::geom_line(data = actual, ggplot2::aes(x = x, y = p) )
 }
 
-x <- rejection_sampling(f, covering, 3, -5, 5, 100000)
+x <- rejection_sampling(f, covering, 3, -5, 5, 10000)
 plot_rejection_sampling(x, f, -5, 5)
 
 

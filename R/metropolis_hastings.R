@@ -116,7 +116,6 @@ metropolis_3d <- function(f, initial_x, initial_y, steps, propsal_sd) {
   for (i in seq(2, steps + 1)) {
     proposal_x <- rnorm(1, mean = current_x, sd = propsal_sd)
     proposal_y <- rnorm(1, mean = current_y, sd = propsal_sd)
-    message(f(proposal_x, proposal_y))
     acceptance_ratio <- f(proposal_x, proposal_y) / f(current_x, current_y)
     if (!is.na(acceptance_ratio) && runif(1) <= acceptance_ratio) {
       current_x <- proposal_x

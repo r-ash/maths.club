@@ -132,7 +132,7 @@ plot(dexp, 0, 5)
 ## the parmeters by independently moving them by +/- 0.1 would look
 ## like:
 proposal <- function(theta) {
-  theta + runif(length(theta), -0.1, 0.1)
+  theta + runif(length(theta), -0.01, 0.01)
 }
 
 
@@ -144,30 +144,13 @@ log_posterior <- function(theta) {
 }
 
 output <- metropolis2(log_posterior, c(beta = 0.4, gamma = 0.2), 10000, proposal)
-plot_3d_histogram(output)
 
-## In the vignette, Lilith defines the model using the data comparison
-## DSL which is part of odin.dust; this gives the same answer but with
-## more magic.
-sir2 <- odin.dust::odin_dust({
-  initial(S) <- N - I_init
-  initial(I) <- I_init
-  initial(R) <- 0
+plot(output[, 3], type = "l")
 
-  deriv(S) <- -beta * S * I / N
-  deriv(I) <- beta * S * I / N - gamma * I
-  deriv(R) <- gamma * I
+plot_3d_histogram(output[, c(1, 2)])
 
-  beta <- user(0.4)
-  gamma <- user(0.2)
-  N <- user(1e5)
-  I_init <- user(1)
 
-  ## likelihood
-  n_positive <- data()
-  n_tested <- data()
-  compare(n_positive) ~ binomial(n_tested, I / N)
-})
-mod2 <- sir2$new(list(), 0, 1)
-mod2$set_data(dust::dust_data(data, "day"))
-mod2$filter()$log_likelihood
+simulate <- function(theta) {
+  mod$set_user(beta = theta[[1]], gamma = theta[[2]])
+  mod$run(c(0, 200))[2, 2]
+}

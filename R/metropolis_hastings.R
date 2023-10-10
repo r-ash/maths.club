@@ -17,19 +17,22 @@ f <- function(x) {
 metropolis2 <- function(f, initial, steps, proposal) {
   current_theta <- initial
   history <- data.frame(matrix(NA_real_, nrow = steps + 1,
-                               ncol = length(initial)))
+                               ncol = length(initial) + 1))
   colnames(history) <- names(initial)
 
-  history[1, ] <- current_theta
+  current_posterior <- f(current_theta)
+  history[1, ] <- c(current_theta, current_posterior)
   for (i in seq(2, steps + 1)) {
     proposal_theta <- proposal(current_theta)
-    acceptance_ratio <- f(proposal_theta) - f(current_theta)
+    proposal_posterior <- f(proposal_theta)
+    acceptance_ratio <- proposal_posterior - current_posterior
     if (runif(1) <= exp(acceptance_ratio)) {
       current_theta <- proposal_theta
+      current_posterior <- proposal_posterior
     }
-    history[i, ] <- current_theta
+    history[i, ] <- c(current_theta, current_posterior)
   }
-  data.frame(sample = history)
+  history
 }
 
 

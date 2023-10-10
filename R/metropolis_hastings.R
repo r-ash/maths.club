@@ -4,6 +4,48 @@ f <- function(x) {
 
 # plot_f(f, -5, 5)
 
+
+#' Run metropolis hastings MCMC
+#'
+#' @param f
+#' @param initial
+#' @param steps
+#' @param propsal_sd
+#'
+#' @return
+#' @export
+metropolis2 <- function(f, initial, steps, proposal) {
+  current_theta <- initial
+  history <- data.frame(matrix(NA_real_, nrow = steps + 1,
+                               ncol = length(initial)))
+  colnames(history) <- names(initial)
+
+  history[1, ] <- current_theta
+  for (i in seq(2, steps + 1)) {
+    proposal_theta <- proposal(current_theta)
+    acceptance_ratio <- f(proposal_theta) / f(current_theta)
+    message(paste("current f is", f(current_theta)))
+    message(paste("proposal f is", f(proposal_theta), "proposal", proposal_theta))
+    message(paste("ratio is", acceptance_ratio))
+    if (runif(1) <= acceptance_ratio) {
+      message(paste("accepting"))
+      current_theta <- proposal_theta
+    }
+    history[i, ] <- current_theta
+  }
+  data.frame(sample = history)
+}
+
+
+#' Run metropolis hastings MCMC
+#'
+#' @param f
+#' @param initial
+#' @param steps
+#' @param propsal_sd
+#'
+#' @return
+#' @export
 metropolis <- function(f, initial, steps, propsal_sd) {
   current_x <- initial
   history <- rep(NA_real_, steps + 1)
@@ -100,11 +142,8 @@ f_3d <- function(x, y) {
   z
 }
 
-shekel <- function(x, y) {
-
-}
-
 plot_3d(f_3d, -6, 5, -5, 5)
+
 
 metropolis_3d <- function(f, initial_x, initial_y, steps, propsal_sd) {
   current_x <- initial_x
@@ -130,7 +169,8 @@ metropolis_3d <- function(f, initial_x, initial_y, steps, propsal_sd) {
 data <- metropolis_3d(f_3d, 0, 0, 100000, 0.2)
 
 plot_3d_histogram <- function(data) {
-  ggplot2::ggplot(data = data, ggplot2::aes(x = sample_x, y = sample_y)) +
+  nam <- colnames(data)
+  ggplot2::ggplot(data = data, ggplot2::aes_string(x = nam[1], y = nam[2])) +
     ggplot2::geom_bin2d(bins = 100) +
     ggplot2::scale_fill_continuous(type = "viridis") +
     ggplot2::theme_minimal()

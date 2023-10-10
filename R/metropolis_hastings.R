@@ -23,12 +23,8 @@ metropolis2 <- function(f, initial, steps, proposal) {
   history[1, ] <- current_theta
   for (i in seq(2, steps + 1)) {
     proposal_theta <- proposal(current_theta)
-    acceptance_ratio <- f(proposal_theta) / f(current_theta)
-    message(paste("current f is", f(current_theta)))
-    message(paste("proposal f is", f(proposal_theta), "proposal", proposal_theta))
-    message(paste("ratio is", acceptance_ratio))
-    if (runif(1) <= acceptance_ratio) {
-      message(paste("accepting"))
+    acceptance_ratio <- f(proposal_theta) - f(current_theta)
+    if (runif(1) <= exp(acceptance_ratio)) {
       current_theta <- proposal_theta
     }
     history[i, ] <- current_theta

@@ -39,7 +39,7 @@ sir <- odin::odin({
   N <- user(1e5)
   I_init <- user(1)
 
-  output(prevelance) <- I / N
+  output(prevalence) <- I / N
 })
 
 ## Remember Bayes theorem
@@ -62,7 +62,7 @@ sir <- odin::odin({
 ## So the likelihood in Lilith's model is defined per time point by the data
 ## for number of positive people (`data$n_positive`) being *biniomially
 ## distributed* with parameters n as the number of people tested
-## (`data$n_tested`) and the modelled prevelance (`I / N`).  We then
+## (`data$n_tested`) and the modelled prevalance (`I / N`).  We then
 ## take the product of these probabilities over all time points. This
 ## is much easier to do by getting the log-probability from the
 ## binomial distribution and taking sum, using the fact that
@@ -74,7 +74,7 @@ sir <- odin::odin({
 pars <- list(beta = 0.4, gamma = 0.2)
 mod <- sir$new(user = pars)
 y <- mod$run(c(0, data$day))[-1, ]
-sum(dbinom(data$n_positive, data$n_tested, y[, "prevelance"], log = TRUE))
+sum(dbinom(data$n_positive, data$n_tested, y[, "prevalence"], log = TRUE))
 
 ## We can then wrap that up as a little function. In order to work
 ## with mcmc we need an unstructured vector of parameters to consider,
@@ -93,7 +93,10 @@ loglikelihood <- function(theta) {
   ## easy enough to tidy that away if you want to...
   mod$set_user(beta = theta[[1]], gamma = theta[[2]])
   y <- mod$run(c(0, data$day))[-1, ]
-  sum <- sum(dbinom(data$n_positive, data$n_tested, y[, "prevelance"], log = TRUE))
+  if (any(y[, "prevalence"] < 0)) {
+    return(-Inf)
+  }
+  sum <- sum(dbinom(data$n_positive, data$n_tested, y[, "prevalence"], log = TRUE))
   if (is.nan(sum)) {
     sum = -Inf
   }
@@ -140,8 +143,8 @@ log_posterior <- function(theta) {
   logprior(theta) + loglikelihood(theta)
 }
 
-data <- metropolis2(log_posterior, c(beta = 0.4, gamma = 0.2), 1000, proposal)
-plot_3d_histogram(data)
+output <- metropolis2(log_posterior, c(beta = 0.4, gamma = 0.2), 10000, proposal)
+plot_3d_histogram(output)
 
 ## In the vignette, Lilith defines the model using the data comparison
 ## DSL which is part of odin.dust; this gives the same answer but with

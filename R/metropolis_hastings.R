@@ -4,7 +4,6 @@ f <- function(x) {
 
 # plot_f(f, -5, 5)
 
-
 #' Run metropolis hastings MCMC
 #'
 #' @param f
@@ -122,8 +121,8 @@ plot_3d <- function(f, x_min, x_max, y_min, y_max) {
 
 # plot_3d(f_3d, -1, 1, -1, 1)
 
-fig <- plotly::plot_ly(z = ~volcano)
-fig <- fig %>% plotly::add_surface()
+# fig <- plotly::plot_ly(z = ~volcano)
+# fig <- fig %>% plotly::add_surface()
 
 plot_3d <- function(f, x_min, x_max, y_min, y_max) {
   x <- seq(x_min, x_max, 0.05)
@@ -135,13 +134,13 @@ plot_3d <- function(f, x_min, x_max, y_min, y_max) {
 
 f_3d <- function(x, y) {
   ## Himmelblau's function
-  z <- -(x^2 + y - 11)^2 - (x + y^2 -7)^2
+  z <- -(x^2 + y - 11)^2 - (x + y^2 - 7)^2
   update <- x < -5 | x > 5 | y < -5 | y > 5
   z[update] <- NA_real_
   z
 }
 
-plot_3d(f_3d, -6, 5, -5, 5)
+#plot_3d(f_3d, -6, 5, -5, 5)
 
 
 metropolis_3d <- function(f, initial_x, initial_y, steps, propsal_sd) {
@@ -165,8 +164,6 @@ metropolis_3d <- function(f, initial_x, initial_y, steps, propsal_sd) {
   data.frame(sample_x = history_x, sample_y = history_y)
 }
 
-data <- metropolis_3d(f_3d, 0, 0, 100000, 0.2)
-
 plot_3d_histogram <- function(data) {
   nam <- colnames(data)
   ggplot2::ggplot(data = data, ggplot2::aes_string(x = nam[1], y = nam[2])) +
@@ -175,4 +172,5 @@ plot_3d_histogram <- function(data) {
     ggplot2::theme_minimal()
 }
 
-plot_3d_histogram(data)
+#data <- metropolis_3d(f_3d, 0, 0, 100000, 0.2)
+#plot_3d_histogram(data)

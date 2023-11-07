@@ -6,8 +6,8 @@ covering <- function(x, scale = 1) {
   scale * dnorm(x, sd = 1.5)
 }
 
-curve(f, -10, 10, n = 1000, log = "y")
-curve(dnorm(x, sd = 4, log = TRUE) * 2, add = TRUE, col = "red")
+# curve(f, -10, 10, n = 1000, log = "y")
+# curve(dnorm(x, sd = 4, log = TRUE) * 2, add = TRUE, col = "red")
 
 plot_f <- function(f, x_min, x_max) {
   x <- seq(x_min, x_max, 0.1)
@@ -49,8 +49,8 @@ plot_rejection_sampling <- function(samples, p, x_min, x_max) {
     ggplot2::geom_line(data = actual, ggplot2::aes(x = x, y = p) )
 }
 
-x <- rejection_sampling(f, covering, 3, -5, 5, 10000)
-plot_rejection_sampling(x, f, -5, 5)
+# x <- rejection_sampling(f, covering, 3, -5, 5, 10000)
+# plot_rejection_sampling(x, f, -5, 5)
 
 
 rejection_sampling_all_points <- function(p, q, c, x_min, x_max, n_samples) {
